@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeria — RSF Eternity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* RSF Eternity — tema verde imersivo.
+         --bg = fundo marrom (primária) · --dark = foreground claro (secundária) · --accent = secundária usada em destaque/estado ativo */
+      --bg: #BC6C49;             /* marrom principal — cor primária */
+      --surface: #C97D5B;        /* superfície de card (marrom +luz) */
+      --surface-2: #D48B69;      /* superfície elevada / hover */
+      --dark: #F2EBDD;           /* foreground / texto principal — cor secundária */
+      --text-soft: rgba(242,235,221,0.62);
+      --border: rgba(242,235,221,0.12);
+      --border-strong: rgba(242,235,221,0.28);
+      --accent: #F2EBDD;         /* claro — destaque / estado ativo */
+      --accent-ink: #BC6C49;     /* texto escuro sobre fundo de destaque claro */
+      --accent-soft: rgba(242,235,221,0.14);
+      --white: #F2EBDD;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg) url(assets/bg.png) center/cover no-repeat fixed;
+      color: var(--dark);
+      font-family: var(--font-sans);
+    }
+
+    /* ── ROOT LAYOUT ── */
+    #g-root {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: transparent;
+    }
+
+    /* ── HEADER ── */
+    #g-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    #btn-close {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.25s var(--ease), color 0.25s var(--ease);
+      color: var(--dark);
+    }
+    @media (hover: hover) { #btn-close:hover { background: var(--dark); color: var(--bg); border-color: var(--dark); } }
+    #btn-close:active { background: var(--dark); color: var(--bg); border-color: var(--dark); }
+
+    /* ── FILTER SECTION ── */
+    #g-filters {
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    #filter-main {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 36px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    #filter-main::-webkit-scrollbar { display: none; }
+
+    .f-btn {
+      padding: 7px 20px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--dark);
+      white-space: nowrap;
+      border-radius: 40px;
+      transition: background 0.22s var(--ease), color 0.22s var(--ease), border-color 0.22s var(--ease), transform 0.15s var(--ease);
+    }
+    @media (hover: hover) { .f-btn:hover { border-color: var(--accent); background: var(--accent-soft); } }
+    .f-btn:active { border-color: var(--accent); background: var(--accent-soft); }
+    .f-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); box-shadow: 0 4px 14px rgba(188,108,73,0.35); }
+    .f-btn:active { transform: scale(0.97); }
+
+    /* Sub-filter */
+    #filter-sub {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.38s var(--ease), opacity 0.3s ease;
+    }
+    #filter-sub.open { max-height: 56px; opacity: 1; }
+
+    #filter-sub-inner {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 36px 13px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    #filter-sub-inner::-webkit-scrollbar { display: none; }
+
+    .sf-btn {
+      padding: 5px 16px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--dark);
+      opacity: 0.55;
+      white-space: nowrap;
+      border-radius: 40px;
+      transition: opacity 0.2s, border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    @media (hover: hover) { .sf-btn:hover { opacity: 1; border-color: var(--border-strong); } }
+    .sf-btn:active { opacity: 1; border-color: var(--border-strong); }
+    .sf-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); opacity: 1; }
+
+    /* ── GALLERY SCROLL ── */
+    #g-scroll {
+      flex: 1;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    #g-scroll::-webkit-scrollbar { width: 5px; }
+    #g-scroll::-webkit-scrollbar-track { background: var(--bg); }
+    #g-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+    /* ── GRID ── */
+    #g-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 14px;
+    }
+    @media (max-width: 1100px) { #g-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { #g-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 420px)  { #g-grid { grid-template-columns: 1fr; } }
+
+    /* ── SKELETON SHIMMER ── */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position:  400px 0; }
+    }
+    .g-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.03) 0%,
+        rgba(255,255,255,0.10) 40%,
+        rgba(255,255,255,0.03) 80%
+      );
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+      z-index: 0;
+      transition: opacity 0.3s ease;
+    }
+    .g-card.loaded::before { opacity: 0; pointer-events: none; }
+
+    /* ── CARD BASE ── */
+    .g-card {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--surface);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+      animation: cardIn 0.55s var(--spring) both;
+      transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
+    }
+    .g-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 16px 38px rgba(0,0,0,0.42), 0 0 0 1px var(--accent-soft);
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); filter: blur(4px); }
+      to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    .g-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.35s ease, transform 0.65s var(--ease);
+      position: relative;
+      z-index: 1;
+    }
+    .g-card.loaded img { opacity: 1; }
+    .g-card:hover img { transform: scale(1.06); }
+
+    .card-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 32px 14px 13px;
+      background: linear-gradient(to top, rgba(33,23,16,0.94) 0%, rgba(33,23,16,0.55) 58%, transparent 100%);
+      color: var(--dark);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      z-index: 2;
+    }
+    .g-card.loaded .card-overlay { opacity: 1; }
+
+    .card-title {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    }
+    .card-sub {
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-top: 4px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    }
+
+    .card-zoom {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transform: scale(0.75);
+      transition: opacity 0.25s var(--ease), transform 0.3s var(--spring);
+      color: var(--accent-ink);
+      box-shadow: 0 4px 14px rgba(188,108,73,0.45);
+      z-index: 2;
+    }
+    .g-card.loaded:hover .card-zoom { opacity: 1; transform: scale(1); }
+
+    /* Plant card */
+    .g-card.is-plant { background: #B1904E; }
+    .g-card.is-plant img { object-fit: cover; padding: 0; }
+    .g-card.is-plant::before {
+      background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.04) 0%,
+        rgba(0,0,0,0.09) 40%,
+        rgba(0,0,0,0.04) 80%
+      );
+      background-size: 800px 100%;
+    }
+
+    /* ── COBERTURA SPECIAL CARD ── */
+    .g-card.cob-card {
+      grid-column: span 2;
+      aspect-ratio: unset;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      color: var(--accent-ink);       /* texto verde-escuro sobre card claro de plantas */
+      border: 1px solid rgba(0,0,0,0.10);
+    }
+    .g-card.cob-card:hover { transform: none; box-shadow: 0 6px 20px rgba(0,0,0,0.28); border-color: rgba(0,0,0,0.10); }
+    .g-card.cob-card::before { display: none; }
+    @media (max-width: 700px) { .g-card.cob-card { grid-column: span 2; } }
+    @media (max-width: 420px) { .g-card.cob-card { grid-column: span 1; } }
+
+    /* ── PLANTAS MODE ── */
+    #g-grid.plantas-mode {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 10px;
+    }
+    #g-grid.plantas-mode .g-card.is-plant,
+    #g-grid.plantas-mode .g-card.cob-card {
+      height: 420px;
+    }
+    #g-grid.plantas-mode .g-card.is-plant {
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+    #g-grid.plantas-mode .g-card.cob-card {
+      grid-column: span 1;
+    }
+    #g-grid.plantas-mode .cob-body {
+      min-height: 0;
+    }
+    @media (max-width: 700px) {
+      #g-grid.plantas-mode { grid-template-columns: 1fr; gap: 8px; padding: 8px; }
+      #g-grid.plantas-mode .g-card.cob-card { grid-column: span 1; }
+    }
+
+    .cob-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid rgba(0,0,0,0.10);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .cob-badge {
+      display: inline-block;
+      padding: 3px 11px;
+      background: var(--bg);
+      color: var(--dark);
+      font-size: 8.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border-radius: 40px;
+      margin-bottom: 5px;
+    }
+
+    .cob-name {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    .cob-area {
+      font-size: 11px;
+      opacity: 0.4;
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+    }
+    .cob-sub {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-top: 4px;
+    }
+
+    /* Floor tab switcher */
+    .floor-tabs {
+      display: flex;
+      padding: 3px;
+      border: 1px solid var(--border-strong);
+      border-radius: 40px;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+    .floor-tab {
+      padding: 5px 16px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--dark);
+      opacity: 0.55;
+      border-radius: 40px;
+      white-space: nowrap;
+      transition: background 0.22s var(--ease), color 0.22s var(--ease), opacity 0.22s;
+    }
+    .floor-tab.active { background: var(--accent); color: var(--accent-ink); opacity: 1; }
+
+    /* Floor image area */
+    .cob-body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+    }
+    .floor-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.38s ease;
+    }
+    .floor-wrap.active { opacity: 1; pointer-events: auto; }
+
+    /* skeleton inside cob body */
+    .floor-skeleton {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.05) 0%,
+        rgba(0,0,0,0.11) 40%,
+        rgba(0,0,0,0.05) 80%
+      );
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+    .cob-body.loaded .floor-skeleton { opacity: 0; pointer-events: none; }
+
+    .floor-wrap img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+      width: 100%; height: 100%;
+      cursor: zoom-in;
+      opacity: 0;
+      transition: opacity 0.35s ease, transform 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .floor-wrap img.loaded { opacity: 1; }
+    .floor-wrap img:hover { transform: scale(1.015); }
+    .floor-lbl {
+      position: absolute;
+      bottom: 14px; left: 14px;
+      padding: 4px 12px;
+      background: rgba(188,108,73,0.82);
+      color: var(--dark);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      border-radius: 40px;
+    }
+
+    /* Footer */
+    .cob-footer {
+      padding: 11px 22px;
+      border-top: 1px solid rgba(0,0,0,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+    .btn-see-both {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 18px;
+      border: 1px solid rgba(0,0,0,0.22);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--accent-ink);
+      border-radius: 40px;
+      transition: background 0.22s var(--ease), color 0.22s var(--ease), border-color 0.22s var(--ease);
+    }
+    @media (hover: hover) { .btn-see-both:hover { background: var(--bg); color: var(--dark); border-color: var(--bg); } }
+    .btn-see-both:active { background: var(--bg); color: var(--dark); border-color: var(--bg); }
+    .cob-hint {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      color: rgba(188,108,73,0.5);
+      text-transform: uppercase;
+    }
+
+    /* ── EMPTY STATE ── */
+    #g-empty {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px;
+      gap: 10px;
+    }
+    #g-empty.show { display: flex; }
+    #g-empty p { font-family: var(--font-serif); font-size: 22px; opacity: 0.35; }
+    #g-empty small { font-size: 11px; letter-spacing: 0.06em; opacity: 0.25; }
+
+    /* disclaimer */
+    #g-disclaimer {
+      text-align: center;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      opacity: 0.4;
+      padding: 8px 16px 14px;
+    }
+
+    /* ── LIGHTBOX ── */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      display: flex;
+      flex-direction: column;
+      background: rgba(188,108,73,0.98);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #lightbox.open { opacity: 1; pointer-events: auto; }
+    #lightbox > * { transform: translateY(8px) scale(0.99); transition: transform 0.35s var(--ease); }
+    #lightbox.open > * { transform: translateY(0) scale(1); }
+
+    #lb-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 20px 32px;
+      flex-shrink: 0;
+    }
+    #lb-title {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: 0.02em;
+    }
+    #lb-sub {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(242,235,221,0.4);
+      margin-top: 4px;
+    }
+    #lb-counter {
+      font-size: 11px;
+      color: rgba(242,235,221,0.35);
+      letter-spacing: 0.06em;
+      padding-top: 4px;
+    }
+    #lb-close {
+      width: 38px; height: 38px;
+      border: 1px solid rgba(242,235,221,0.25);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      color: var(--dark);
+      transition: background 0.22s, border-color 0.22s;
+      flex-shrink: 0;
+    }
+    @media (hover: hover) { #lb-close:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); } }
+    #lb-close:active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+    #lb-body {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 12px 80px;
+    }
+
+    #lb-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Dual floor lightbox */
+    #lb-dual {
+      display: none;
+      gap: 24px;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+    #lb-dual.show { display: flex; }
+    .dual-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+      min-width: 0;
+    }
+    .dual-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(242,235,221,0.5);
+      flex-shrink: 0;
+    }
+    .dual-col img {
+      flex: 1;
+      max-width: 100%;
+      min-height: 0;
+      object-fit: contain;
+    }
+
+    /* Nav arrows */
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 46px; height: 46px;
+      border: 1px solid rgba(242,235,221,0.18);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      color: var(--dark);
+      transition: background 0.22s, border-color 0.22s, color 0.22s;
+    }
+    @media (hover: hover) { .lb-nav:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); } }
+    .lb-nav:active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .lb-nav:disabled { opacity: 0.18; cursor: default; }
+    #lb-prev { left: 20px; }
+    #lb-next { right: 20px; }
+
+    #lb-foot {
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 12px;
+    }
+    #lb-notice {
+      font-size: 10.5px;
+      color: rgba(242,235,221,0.35);
+      letter-spacing: 0.06em;
+      padding: 6px 18px;
+      border: 1px solid rgba(242,235,221,0.1);
+      border-radius: 40px;
+    }
+    #lb-notice:empty { display: none; }
+
+    /* ── ZOOM CONTROLS ── */
+    #lb-zoom-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lb-zoom-btn {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(242,235,221,0.22);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      color: var(--dark);
+      font-size: 18px;
+      line-height: 1;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    @media (hover: hover) { .lb-zoom-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); } }
+    .lb-zoom-btn:active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .lb-zoom-btn:disabled { opacity: 0.2; cursor: default; }
+    #lb-zoom-level {
+      font-size: 10.5px;
+      color: rgba(242,235,221,0.45);
+      letter-spacing: 0.06em;
+      min-width: 36px;
+      text-align: center;
+    }
+
+    /* image zoom/pan state */
+    #lb-img {
+      cursor: zoom-in;
+      transform-origin: center center;
+      will-change: transform;
+      transition: opacity 0.18s ease;
+    }
+    #lb-img.zoomed { cursor: grab; }
+    #lb-img.dragging { cursor: grabbing; transition: none; }
+
+    /* ── TRANSIÇÃO DE NAVEGAÇÃO (setas prev/next) ── */
+    @keyframes lbOutLeft  { to   { opacity: 0; transform: translateX(-42px); } }
+    @keyframes lbOutRight { to   { opacity: 0; transform: translateX(42px);  } }
+    @keyframes lbInRight  { from { opacity: 0; transform: translateX(48px);  } to { opacity: 1; transform: translateX(0); } }
+    @keyframes lbInLeft   { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes lbFadeIn   { from { opacity: 0; }                                to { opacity: 1; } }
+    #lb-img.o-next { animation: lbOutLeft  0.16s var(--ease) forwards; }
+    #lb-img.o-prev { animation: lbOutRight 0.16s var(--ease) forwards; }
+    #lb-img.i-next { animation: lbInRight  0.40s var(--spring); }
+    #lb-img.i-prev { animation: lbInLeft   0.40s var(--spring); }
+    #lb-img.i-fade { animation: lbFadeIn   0.24s var(--ease);  }
+
+    /* ── TOUCH / SWIPE hint on lightbox nav ── */
+    @media (hover: none) {
+      .card-zoom { opacity: 1; transform: scale(1); }
+      .g-card:hover img { transform: none; }
+    }
+
+    /* ── TABLET (≤ 900px) ── */
+    @media (max-width: 900px) {
+      #filter-main { padding: 12px 20px; gap: 5px; }
+      #filter-sub-inner { padding: 6px 20px 10px; }
+      #lb-head { padding: 16px 20px; }
+      #lb-body { padding: 8px 60px; }
+      #lb-prev { left: 10px; }
+      #lb-next { right: 10px; }
+    }
+
+    /* ── MOBILE (≤ 600px) ── */
+    @media (max-width: 600px) {
+      #g-header { padding: 10px 14px; }
+
+      #filter-main { padding: 10px 12px; gap: 6px; }
+      #filter-sub-inner { padding: 6px 12px 10px; }
+      .f-btn { padding: 6px 14px; font-size: 10.5px; }
+      .sf-btn { padding: 4px 12px; }
+
+      /* grid */
+      #g-grid { gap: 2px; padding: 2px; }
+
+      /* card text */
+      .card-title { font-size: 11.5px; }
+
+      /* cob-card header stacks vertically */
+      .cob-header { flex-direction: column; align-items: flex-start; padding: 14px 16px 10px; gap: 10px; }
+      .cob-name { font-size: 16px; }
+      .cob-body { min-height: 200px; }
+      .cob-footer { padding: 9px 16px; }
+      .btn-see-both { font-size: 10px; padding: 6px 14px; }
+
+      /* lightbox */
+      #lb-head { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+      #lb-title { font-size: 14px; }
+      #lb-body { padding: 0; }
+
+      /* arrows centered right below the image on mobile */
+      #lb-body {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto;
+        justify-content: center;
+        align-content: center;
+        column-gap: 16px;
+        row-gap: 14px;
+      }
+      #lb-img, #lb-dual { grid-column: 1 / -1; grid-row: 1; justify-self: center; }
+      #lb-img { max-height: calc(100dvh - 240px); max-width: 100vw; }
+      #lb-dual { height: auto; max-height: calc(100dvh - 240px); overflow-y: auto; }
+      #lb-prev, #lb-next {
+        position: static;
+        transform: none;
+        grid-row: 2;
+        width: 42px; height: 42px;
+        background: transparent;
+        border-color: rgba(242,235,221,0.3);
+      }
+      #lb-prev { grid-column: 1; justify-self: end; }
+      #lb-next { grid-column: 2; justify-self: start; }
+
+      /* dual view stacks vertically on mobile */
+      #lb-dual { flex-direction: column; gap: 12px; padding: 12px; }
+      .dual-col { height: auto; flex: none; width: 100%; }
+      .dual-col img { max-height: 35vh; }
+
+      #lb-foot { padding: 8px 14px; }
+      #lb-notice { font-size: 9.5px; padding: 4px 14px; }
+    }
+
+    /* ── VERY SMALL (≤ 360px) ── */
+    @media (max-width: 360px) {
+      .f-btn { padding: 5px 10px; font-size: 10px; }
+      .floor-tab { padding: 4px 10px; font-size: 10px; }
+    }
+
+    /* ── ACESSIBILIDADE / DESEMPENHO: respeitar redução de movimento ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+      .g-card { animation: none; filter: none; }
+      .g-card:hover { transform: none; }
+      .g-card:hover img { transform: none; }
+      .g-card::before, .floor-skeleton { animation: none; }
+      #lightbox > * { transform: none; }
+      #lb-img.o-next, #lb-img.o-prev, #lb-img.i-next, #lb-img.i-prev, #lb-img.i-fade { animation-duration: 0.001ms; }
+    }
+  
+    #btn-close { border:none !important; border-radius:0 !important; width:45px !important; height:45px !important; background:url(assets/close-normal.png) center/100% 100% no-repeat !important; color:transparent; padding:0; backdrop-filter:none; -webkit-backdrop-filter:none; }
+    #btn-close:active { background-image:url(assets/close-hover.png) !important; }
+    @media (hover: hover) { #btn-close:hover { background:url(assets/close-hover.png) center/100% 100% no-repeat !important; border:none !important; border-radius:0 !important; width:45px !important; height:45px !important; } }
+
+    #lb-close { border:none !important; border-radius:0 !important; width:45px !important; height:45px !important; background:url(assets/close-normal.png) center/100% 100% no-repeat !important; color:transparent; padding:0; backdrop-filter:none; -webkit-backdrop-filter:none; }
+    #lb-close:active { background-image:url(assets/close-hover.png) !important; }
+    @media (hover: hover) { #lb-close:hover { background:url(assets/close-hover.png) center/100% 100% no-repeat !important; border:none !important; border-radius:0 !important; width:45px !important; height:45px !important; } }
+
+    /* ══════════════ DESIGN v2 — terracota #BC6C49 ══════════════ */
+    :root {
+      --dark: #FFF8F1;
+      --text-soft: rgba(255,248,241,0.72);
+      --border: rgba(255,248,241,0.18);
+      --border-strong: rgba(255,248,241,0.45);
+      --accent: #FFF8F1;
+      --accent-ink: #9A4F2E;
+      --accent-soft: rgba(255,248,241,0.16);
+      --glass: rgba(188,108,73,0.88);
+    }
+
+    /* Barra superior fixa (vidro terracota) */
+    #g-header, #g-filters { position: relative; z-index: 5; background: var(--glass); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+    #g-header { justify-content: space-between; padding: 14px 32px 10px; border-bottom: none; }
+    #g-brand { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+    #g-brand-name { font-family: var(--font-serif); font-size: 26px; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dark); white-space: nowrap; }
+    #g-count { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-soft); white-space: nowrap; }
+    #g-filters { border-bottom: 1px solid var(--border); box-shadow: 0 10px 30px rgba(110,55,30,0.22); }
+
+    /* Categorias: abas com sublinhado */
+    #filter-main { gap: 4px; padding: 4px 32px 0; }
+    .f-btn { position: relative; padding: 12px 18px 14px; border: none; border-radius: 0; background: transparent; color: var(--text-soft); font-size: 12px; letter-spacing: 0.14em; box-shadow: none; opacity: 1; }
+    .f-btn::after { content: ''; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 2px; border-radius: 2px; background: var(--dark); transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease); }
+    @media (hover: hover) { .f-btn:hover { background: transparent; color: var(--dark); border: none; } }
+    .f-btn:active { background: transparent; color: var(--dark); border: none; }
+    .f-btn.active { background: transparent; color: var(--dark); border: none; box-shadow: none; }
+    .f-btn.active::after { transform: scaleX(1); }
+
+    /* Subcategorias: pílulas */
+    #filter-sub.open { max-height: 64px; }
+    #filter-sub-inner { padding: 6px 32px 14px; gap: 8px; }
+    .sf-btn { padding: 7px 18px; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: var(--dark); background: rgba(255,248,241,0.10); border: 1px solid transparent; border-radius: 999px; opacity: 1; }
+    @media (hover: hover) { .sf-btn:hover { background: rgba(255,248,241,0.22); border-color: transparent; color: var(--dark); } }
+    .sf-btn:active { background: var(--dark); color: var(--accent-ink); border-color: transparent; }
+    .sf-btn.active { background: var(--dark); color: var(--accent-ink); border-color: transparent; box-shadow: 0 4px 14px rgba(110,55,30,0.28); }
+
+    /* Grade em mosaico */
+    #g-grid { gap: 18px; padding: 26px 32px 18px; grid-auto-flow: dense; }
+    #g-grid:not(.plantas-mode) { grid-auto-rows: clamp(170px, 17vw, 270px); }
+    #g-grid:not(.plantas-mode) .g-card { aspect-ratio: auto; }
+    #g-grid:not(.plantas-mode) .g-card:nth-child(5n+1) { grid-column: span 2; }
+    @media (max-width: 1100px) { #g-grid:not(.plantas-mode) { grid-auto-rows: clamp(150px, 24vw, 240px); } #g-grid:not(.plantas-mode) .g-card:nth-child(5n+1) { grid-column: auto; } }
+    @media (max-width: 700px)  { #g-grid { gap: 12px; padding: 16px; } #g-grid:not(.plantas-mode) { grid-auto-rows: 44vw; } #g-header { padding: 12px 16px 8px; } #g-brand-name { font-size: 20px; } #filter-main, #filter-sub-inner { padding-left: 16px; padding-right: 16px; } }
+    @media (max-width: 420px)  { #g-grid:not(.plantas-mode) { grid-auto-rows: 62vw; } #g-count { display: none; } }
+
+    .g-card, .g-card.is-plant { background: #D48B69; border: none; border-radius: 20px; box-shadow: 0 10px 28px rgba(110,55,30,0.30); }
+    .g-card.is-plant { background: #FFFFFF; }
+    .g-card:hover { border: none; transform: translateY(-6px); box-shadow: 0 20px 44px rgba(110,55,30,0.45); }
+    .card-overlay { padding: 56px 18px 16px; background: linear-gradient(to top, rgba(70,32,16,0.88) 0%, rgba(70,32,16,0.35) 55%, transparent 100%); }
+    .card-title { font-family: var(--font-serif); font-size: 19px; font-weight: 400; letter-spacing: 0.01em; }
+    .card-sub { font-size: 9.5px; letter-spacing: 0.16em; opacity: 0.8; margin-top: 3px; }
+    .card-zoom { background: var(--dark); color: var(--accent-ink); box-shadow: 0 4px 14px rgba(110,55,30,0.4); }
+
+    .g-card.is-plant { display: flex; flex-direction: column; }
+    .g-card.is-plant img { flex: 1; min-height: 0; object-fit: contain; padding: 10px 10px 0; }
+    .g-card.is-plant .card-overlay { position: static; padding: 11px 18px 12px; background: var(--bg); }
+    #g-disclaimer { color: var(--dark); opacity: 0.7; }
+
+    /* ── Barra de rolagem: fina, em pílula, cor do projeto ── */
+    #g-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,248,241,0.75) transparent; }
+    #g-scroll::-webkit-scrollbar { width: 12px; height: 12px; }
+    #g-scroll::-webkit-scrollbar-track { background: rgba(110,55,32,0.18); margin: 6px 0; }
+    #g-scroll::-webkit-scrollbar-thumb { background: rgba(255,248,241,0.75); background-clip: padding-box; border: 4px solid transparent; border-radius: 999px; min-height: 48px; transition: background 0.2s; }
+    #g-scroll::-webkit-scrollbar-thumb:hover { background: #FFF8F1; background-clip: padding-box; border-width: 3px; }
+    #g-scroll::-webkit-scrollbar-corner { background: transparent; }
+    #lb-dual { scrollbar-width: thin; scrollbar-color: rgba(255,248,241,0.75) transparent; }
+    #lb-dual::-webkit-scrollbar { width: 12px; height: 12px; }
+    #lb-dual::-webkit-scrollbar-track { background: rgba(110,55,32,0.18); margin: 6px 0; }
+    #lb-dual::-webkit-scrollbar-thumb { background: rgba(255,248,241,0.75); background-clip: padding-box; border: 4px solid transparent; border-radius: 999px; min-height: 48px; transition: background 0.2s; }
+    #lb-dual::-webkit-scrollbar-thumb:hover { background: #FFF8F1; background-clip: padding-box; border-width: 3px; }
+    #lb-dual::-webkit-scrollbar-corner { background: transparent; }
+    #g-disclaimer { color: var(--text-soft); }
+
+    /* ── Setas anterior / próximo (imagens) ── */
+    .lb-nav { border: none !important; border-radius:0 !important; width:45px !important; height:45px !important; padding: 0; color: transparent; background-repeat: no-repeat !important; background-position: center !important; background-size: 100% 100% !important; }
+    #lb-prev { background-image: url(assets/voltar-normal.png) !important; }
+    #lb-next { background-image: url(assets/proximo-normal.png) !important; }
+    #lb-prev:active { background-image: url(assets/voltar-hover.png) !important; }
+    #lb-next:active { background-image: url(assets/proximo-hover.png) !important; }
+    @media (hover: hover) {
+      #lb-prev:hover { background-image: url(assets/voltar-hover.png) !important; }
+      #lb-next:hover { background-image: url(assets/proximo-hover.png) !important; }
+    }
+    .lb-nav, .lb-nav:hover, .lb-nav:active { background-color: transparent !important; box-shadow: none !important; }
+    .lb-nav:disabled { opacity: 0.18; }
+  </style>
+</head>
+<body>
+
+<div id="g-root">
+
+  <!-- Header -->
+  <header id="g-header">
+    <div id="g-brand"><span id="g-brand-name"></span><span id="g-count"></span></div>
+    <button id="btn-close" title="Fechar galeria" aria-label="Fechar"></button>
+  </header>
+
+  <!-- Filters -->
+  <div id="g-filters">
+    <div id="filter-main"></div>
+    <div id="filter-sub">
+      <div id="filter-sub-inner"></div>
+    </div>
+  </div>
+
+  <!-- Gallery -->
+  <div id="g-scroll">
+    <div id="g-grid"></div>
+    <div id="g-empty">
+      <p>Nenhuma imagem encontrada</p>
+      <small>Selecione outra categoria</small>
+    </div>
+    <p id="g-disclaimer">Imagens meramente ilustrativas.</p>
+  </div>
+
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" role="dialog" aria-modal="true">
+  <div id="lb-head">
+    <div>
+      <div id="lb-title"></div>
+      <div id="lb-sub"></div>
+    </div>
+    <div id="lb-counter"></div>
+    <button id="lb-close" aria-label="Fechar"></button>
+  </div>
+  <div id="lb-body">
+    <button id="lb-prev" class="lb-nav" aria-label="Anterior"></button>
+    <img id="lb-img" src="" alt="">
+    <div id="lb-dual">
+      <div class="dual-col" id="dc-a">
+        <div class="dual-lbl"></div>
+        <img src="" alt="">
+      </div>
+      <div class="dual-col" id="dc-b">
+        <div class="dual-lbl"></div>
+        <img src="" alt="">
+      </div>
+    </div>
+    <button id="lb-next" class="lb-nav" aria-label="Próximo"></button>
+  </div>
+  <div id="lb-foot">
+    <div id="lb-zoom-bar">
+      <button class="lb-zoom-btn" id="lb-zoom-out" aria-label="Zoom out" title="Diminuir zoom">−</button>
+      <span id="lb-zoom-level">100%</span>
+      <button class="lb-zoom-btn" id="lb-zoom-in" aria-label="Zoom in" title="Aumentar zoom">+</button>
+    </div>
+    <div id="lb-notice">Imagens meramente ilustrativas.</div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// CONFIGURAÇÃO DA GALERIA
+// Edite GALLERY_CONFIG.items abaixo para adicionar suas imagens.
+// Coloque os arquivos nas pastas dentro de assets/ e atualize
+// os campos src com os nomes exatos dos arquivos.
+// ================================================================
+const GALLERY_CONFIG = {
+  projectName: 'RSF ETERNITY',
+  projectSub:  '',
+
+  categories: [
+    {
+      id: 'fachadas', label: 'Fachadas',
+      subs: [
+        { id: 'fa-fachadas', label: 'Fachadas' },
+        { id: 'fa-aereas', label: 'Vistas Aéreas' },
+      ]
+    },
+    {
+      id: 'lazer', label: 'Lazer',
+      subs: [
+        { id: 'lz-piscinas', label: 'Piscinas' },
+        { id: 'lz-esportes', label: 'Esportes' },
+        { id: 'lz-convivencia', label: 'Convivência' },
+      ]
+    },
+    {
+      id: 'areas-comuns', label: 'Áreas Comuns',
+      subs: [
+        { id: 'ac-social', label: 'Social' },
+        { id: 'ac-coworking', label: 'Coworking' },
+        { id: 'ac-servicos', label: 'Serviços' },
+      ]
+    },
+    {
+      id: 'bem-estar', label: 'Bem-estar',
+      subs: [
+        { id: 'be-fitness', label: 'Fitness' },
+        { id: 'be-spa', label: 'Spa e Sauna' },
+      ]
+    },
+    { id: 'apartamento', label: 'Apartamento Decorado' },
+    {
+      id: 'plantas', label: 'Plantas',
+      subs: [
+        { id: 'pl-implantacao', label: 'Implantação' },
+        { id: 'pl-tipos', label: 'Plantas Tipo' },
+        { id: 'pl-ampliadas', label: 'Tipos Ampliados' },
+        { id: 'pl-decorados', label: 'Decorados' },
+      ]
+    },
+  ],
+
+  items: [
+    // ═══ FACHADAS / fa-fachadas ═══
+    { id:1, type:'image', category:'fachadas', subCategory:'fa-fachadas', title:'Torres ao Entardecer', src:'assets/IMAGENS/RSF_RP41_ST_01_Fachada_R07.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST_01_Fachada_R07.jpg' },
+    { id:2, type:'image', category:'fachadas', subCategory:'fa-fachadas', title:'Fachada Noturna', src:'assets/IMAGENS/RSF_RP41_ST_02_Fachada_R06.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST_02_Fachada_R06.jpg' },
+    { id:3, type:'image', category:'fachadas', subCategory:'fa-fachadas', title:'Fachada e Paisagismo', src:'assets/IMAGENS/RSF_RP41_ST1_R01_04_Fachada.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R01_04_Fachada.jpg' },
+    { id:4, type:'image', category:'fachadas', subCategory:'fa-fachadas', title:'Portaria', src:'assets/IMAGENS/RSF_RP41_ST1_R07_03_Portaria.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R07_03_Portaria.jpg' },
+
+    // ═══ FACHADAS / fa-aereas ═══
+    { id:5, type:'image', category:'fachadas', subCategory:'fa-aereas', title:'Varandas e Vista da Cidade', src:'assets/IMAGENS/RSF_RP41_ST_R02_29_Voo_Passaro_Fachada.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST_R02_29_Voo_Passaro_Fachada.jpg' },
+    { id:6, type:'image', category:'fachadas', subCategory:'fa-aereas', title:'Cobertura ao Pôr do Sol', src:'assets/IMAGENS/RSF_RP41_ST_R02_25_Voo_Passaro_C01.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST_R02_25_Voo_Passaro_C01.jpg' },
+    { id:7, type:'image', category:'fachadas', subCategory:'fa-aereas', title:'Torre ao Anoitecer', src:'assets/IMAGENS/RSF_RP41_ST1_R04_24_Voo_passaro.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R04_24_Voo_passaro.jpg' },
+    { id:8, type:'image', category:'fachadas', subCategory:'fa-aereas', title:'Torres ao Crepúsculo', src:'assets/IMAGENS/RSF_RP41_ST1_R04_25_Voo de Passaro.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R04_25_Voo de Passaro.jpg' },
+    { id:9, type:'image', category:'fachadas', subCategory:'fa-aereas', title:'Vista Aérea das Piscinas', src:'assets/IMAGENS/RSF_RP41_ST1_R04_23_Voo de Passaro Piscina.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R04_23_Voo de Passaro Piscina.jpg' },
+
+    // ═══ LAZER / lz-piscinas ═══
+    { id:10, type:'image', category:'lazer', subCategory:'lz-piscinas', title:'Piscina com Borda Infinita', src:'assets/IMAGENS/RSF_RP41_ST_17_Piscina molhado_011.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST_17_Piscina molhado_011.jpg' },
+    { id:11, type:'image', category:'lazer', subCategory:'lz-piscinas', title:'Piscina Coberta', src:'assets/IMAGENS/RSF_RP41_ST1_R04_14_Piscina Coberta.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R04_14_Piscina Coberta.jpg' },
+    { id:12, type:'image', category:'lazer', subCategory:'lz-piscinas', title:'Piscina Family Space', src:'assets/IMAGENS/RSF_RP41_ST1_R04_20_Piscina Family Space.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R04_20_Piscina Family Space.jpg' },
+    { id:13, type:'image', category:'lazer', subCategory:'lz-piscinas', title:'Family Space e Piscina Rooftop', src:'assets/IMAGENS/RSF_RP41_ST1_R03_27_Voo Family Space.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R03_27_Voo Family Space.jpg' },
+    { id:14, type:'image', category:'lazer', subCategory:'lz-piscinas', title:'Piscina Aquecida', src:'assets/IMAGENS/RSF_RP41_ST1_COLOR_28_Sauna01.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_COLOR_28_Sauna01.jpg' },
+    { id:15, type:'image', category:'lazer', subCategory:'lz-piscinas', title:'Piscina Infantil', src:'assets/IMAGENS/RSF_RP41_ST1_R01_16_Piscina infantil.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R01_16_Piscina infantil.jpg' },
+    { id:16, type:'image', category:'lazer', subCategory:'lz-piscinas', title:'Piso Molhado', src:'assets/IMAGENS/RSF_RP41_ST1_R02_15_Piso Molhado_v1.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R02_15_Piso Molhado_v1.jpg' },
+
+    // ═══ LAZER / lz-esportes ═══
+    { id:17, type:'image', category:'lazer', subCategory:'lz-esportes', title:'Quadra de Tênis', src:'assets/IMAGENS/RSF_RP41_ST_R02_06_Quadra Tennis.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST_R02_06_Quadra Tennis.jpg' },
+    { id:18, type:'image', category:'lazer', subCategory:'lz-esportes', title:'Beach Tennis', src:'assets/IMAGENS/RSF_RP41_ST1_R03_13_Beach Tennis.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R03_13_Beach Tennis.jpg' },
+    { id:19, type:'image', category:'lazer', subCategory:'lz-esportes', title:'Quadra Poliesportiva', src:'assets/IMAGENS/RSF_RP41_ST1_R04_07_Quadra Poliesportiva.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R04_07_Quadra Poliesportiva.jpg' },
+    { id:20, type:'image', category:'lazer', subCategory:'lz-esportes', title:'Pista de Patins', src:'assets/IMAGENS/RSF_RP41_ST1_R02_10_Pista_de_patins.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R02_10_Pista_de_patins.jpg' },
+    { id:21, type:'image', category:'lazer', subCategory:'lz-esportes', title:'Apoio da Quadra', src:'assets/IMAGENS/RSF_RP41_Apoio_Quadra_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Apoio_Quadra_HR.jpg' },
+
+    // ═══ LAZER / lz-convivencia ═══
+    { id:22, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Praça de Encontro', src:'assets/IMAGENS/RSF_RP41_ST1_R03_09_Praca_encontro_v1.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R03_09_Praca_encontro_v1.jpg' },
+    { id:23, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Estar e Bate-papo Rooftop', src:'assets/IMAGENS/RSF_RP41_ST1_R03_22_Descanso_Estar_Bate_Papo_Rooftop.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R03_22_Descanso_Estar_Bate_Papo_Rooftop.jpg' },
+    { id:24, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Praça do Piquenique', src:'assets/IMAGENS/RSF_RP41_ST1_R05_05_Praca Piquinique.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R05_05_Praca Piquinique.jpg' },
+    { id:25, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Praça entre Prédios', src:'assets/IMAGENS/RSF_RP41_ST1_R05_18_Praca entre predios.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R05_18_Praca entre predios.jpg' },
+    { id:26, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Churrasqueira', src:'assets/IMAGENS/RSF_RP41_ST1_R03_12_Churrasqueira.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R03_12_Churrasqueira.jpg' },
+    { id:27, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Family Space', src:'assets/IMAGENS/RSF_RP41_ST1_19_Family_Space_R01.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_19_Family_Space_R01.jpg' },
+    { id:28, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Family Space 02', src:'assets/IMAGENS/RSF_RP41_ST1_19_Family_Space_R02.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_19_Family_Space_R02.jpg' },
+    { id:29, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Playground', src:'assets/IMAGENS/RSF_RP41_ST1_11_R03_Playground.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_11_R03_Playground.jpg' },
+    { id:30, type:'image', category:'lazer', subCategory:'lz-convivencia', title:'Pet Place', src:'assets/IMAGENS/RSF_RP41_ST_08_Pet Place_R02.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST_08_Pet Place_R02.jpg' },
+
+    // ═══ AREAS-COMUNS / ac-social ═══
+    { id:31, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Lobby', src:'assets/IMAGENS/RSF_RP41_Lobby_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Lobby_HR.jpg' },
+    { id:32, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Espaço Gourmet', src:'assets/IMAGENS/RSF_RP41_Gourmet_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Gourmet_HR.jpg' },
+    { id:33, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Salão de Festas Adulto', src:'assets/IMAGENS/RSF_RP41_Festas_Adulto_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Festas_Adulto_HR.jpg' },
+    { id:34, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Salão de Festas Infantil', src:'assets/IMAGENS/RSF_RP41_Salao_Festas_Infantil_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Salao_Festas_Infantil_HR.jpg' },
+    { id:35, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Brinquedoteca', src:'assets/IMAGENS/RSF_RP41_Brinquedoteca_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Brinquedoteca_HR.jpg' },
+    { id:36, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Sport Bar', src:'assets/IMAGENS/RSF_RP41_Sport_Bar_01_HR 1.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Sport_Bar_01_HR 1.jpg' },
+    { id:37, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Sport Bar – Carteado', src:'assets/IMAGENS/RSF_RP41_Sport_Bar_02_HR 1.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Sport_Bar_02_HR 1.jpg' },
+    { id:38, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Sala de Jogos', src:'assets/IMAGENS/RSF_RP41_Sala_Jogos_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Sala_Jogos_HR.jpg' },
+    { id:39, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Cinema', src:'assets/IMAGENS/RSF_RP41_Cinema_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Cinema_HR.jpg' },
+    { id:40, type:'image', category:'areas-comuns', subCategory:'ac-social', title:'Espaço Youtuber', src:'assets/IMAGENS/RSF_RP41_Espaco_Youtube_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Espaco_Youtube_HR.jpg' },
+
+    // ═══ AREAS-COMUNS / ac-coworking ═══
+    { id:41, type:'image', category:'areas-comuns', subCategory:'ac-coworking', title:'Coworking', src:'assets/IMAGENS/RSF_RP41_Coworking_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Coworking_HR.jpg' },
+    { id:42, type:'image', category:'areas-comuns', subCategory:'ac-coworking', title:'Sala de Reunião', src:'assets/IMAGENS/RSF_RP41_Reuniao_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Reuniao_HR.jpg' },
+
+    // ═══ AREAS-COMUNS / ac-servicos ═══
+    { id:43, type:'image', category:'areas-comuns', subCategory:'ac-servicos', title:'Mini Market', src:'assets/IMAGENS/RSF_RP41_Mini_Market_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Mini_Market_HR.jpg' },
+    { id:44, type:'image', category:'areas-comuns', subCategory:'ac-servicos', title:'Delivery', src:'assets/IMAGENS/RSF_RP41_Delivery_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Delivery_HR.jpg' },
+    { id:45, type:'image', category:'areas-comuns', subCategory:'ac-servicos', title:'Depósitos', src:'assets/IMAGENS/RSF_RP41_Deposito_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Deposito_HR.jpg' },
+    { id:46, type:'image', category:'areas-comuns', subCategory:'ac-servicos', title:'Bicicletário', src:'assets/IMAGENS/RSF_RP41_Bicicletario_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Bicicletario_HR.jpg' },
+    { id:47, type:'image', category:'areas-comuns', subCategory:'ac-servicos', title:'Car Wash', src:'assets/IMAGENS/RSF_RP41_Car_Wash_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Car_Wash_HR.jpg' },
+    { id:48, type:'image', category:'areas-comuns', subCategory:'ac-servicos', title:'Pet Care', src:'assets/IMAGENS/RSF_RP41_Pet_Care_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Pet_Care_HR.jpg' },
+    { id:49, type:'image', category:'areas-comuns', subCategory:'ac-servicos', title:'Beauty', src:'assets/IMAGENS/RSF_RP41_Beauty_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Beauty_HR.jpg' },
+
+    // ═══ BEM-ESTAR / be-fitness ═══
+    { id:50, type:'image', category:'bem-estar', subCategory:'be-fitness', title:'Academia', src:'assets/IMAGENS/RSF_RP41_Fitness_Ang_B_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Fitness_Ang_B_HR.jpg' },
+    { id:51, type:'image', category:'bem-estar', subCategory:'be-fitness', title:'Academia – Vista Panorâmica', src:'assets/IMAGENS/RSF_RP41_Fitness_Ang_D_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Fitness_Ang_D_HR.jpg' },
+    { id:52, type:'image', category:'bem-estar', subCategory:'be-fitness', title:'Sala de Ciclismo', src:'assets/IMAGENS/RSF_RP41_Ciclismo_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Ciclismo_HR.jpg' },
+    { id:53, type:'image', category:'bem-estar', subCategory:'be-fitness', title:'Pilates', src:'assets/IMAGENS/RSF_RP41_Pilates_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Pilates_HR.jpg' },
+    { id:54, type:'image', category:'bem-estar', subCategory:'be-fitness', title:'Fitness Externo', src:'assets/IMAGENS/RSF_RP41_ST1_R05_21_Fitness externo.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_ST1_R05_21_Fitness externo.jpg' },
+
+    // ═══ BEM-ESTAR / be-spa ═══
+    { id:55, type:'image', category:'bem-estar', subCategory:'be-spa', title:'Spa', src:'assets/IMAGENS/RSF_RP41_Spa_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Spa_HR.jpg' },
+    { id:56, type:'image', category:'bem-estar', subCategory:'be-spa', title:'Sauna', src:'assets/IMAGENS/RSF_RP41_Sauna_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Sauna_HR.jpg' },
+    { id:57, type:'image', category:'bem-estar', subCategory:'be-spa', title:'Sala de Massagem', src:'assets/IMAGENS/RSF_RP41_Massagem_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Massagem_HR.jpg' },
+
+    // ═══ APARTAMENTO ═══
+    { id:58, type:'image', category:'apartamento', title:'Living 01', src:'assets/IMAGENS/RSF_RP41_Living_01_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Living_01_HR.jpg' },
+    { id:59, type:'image', category:'apartamento', title:'Living 02', src:'assets/IMAGENS/RSF_RP41_Living_02_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Living_02_HR.jpg' },
+    { id:60, type:'image', category:'apartamento', title:'Living 03', src:'assets/IMAGENS/RSF_RP41_Living_03_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Living_03_HR.jpg' },
+    { id:61, type:'image', category:'apartamento', title:'Living 06', src:'assets/IMAGENS/RSF_RP41_Living_06_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Living_06_HR.jpg' },
+    { id:62, type:'image', category:'apartamento', title:'Decorado – Living e Cozinha', src:'assets/IMAGENS/RSF_RP41_Decorado_02_HR.jpg', thumb:'assets/thumbs/IMAGENS/RSF_RP41_Decorado_02_HR.jpg' },
+
+    // ═══ PLANTAS / pl-implantacao ═══
+    { id:63, type:'image', category:'plantas', subCategory:'pl-implantacao', isPlant:true, title:'Implantação Geral', src:'assets/PLANTAS/IMPL GERAL_v2.jpg', thumb:'assets/thumbs/PLANTAS/IMPL GERAL_v2.jpg' },
+    { id:64, type:'image', category:'plantas', subCategory:'pl-implantacao', isPlant:true, title:'Implantação Geral (Sem Fundo)', src:'assets/PLANTAS/PL_IMPLANTACAO_HR_SEM FUNDO.jpg', thumb:'assets/thumbs/PLANTAS/PL_IMPLANTACAO_HR_SEM FUNDO.jpg' },
+    { id:65, type:'image', category:'plantas', subCategory:'pl-implantacao', isPlant:true, title:'Implantação Rooftop', src:'assets/PLANTAS/RSF_RP41_FP1_R04_20_Implantacao_Rooftop.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_FP1_R04_20_Implantacao_Rooftop.jpg' },
+    { id:66, type:'image', category:'plantas', subCategory:'pl-implantacao', isPlant:true, title:'Masterplan', src:'assets/PLANTAS/RSF_MasterPlan_I_Melville_R05.jpg', thumb:'assets/thumbs/PLANTAS/RSF_MasterPlan_I_Melville_R05.jpg' },
+
+    // ═══ PLANTAS / pl-tipos ═══
+    { id:67, type:'image', category:'plantas', subCategory:'pl-tipos', isPlant:true, title:'Planta Tipo 01/05', src:'assets/PLANTAS/RSF_RP41_Tipo_01_05_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_01_05_HR.jpg' },
+    { id:68, type:'image', category:'plantas', subCategory:'pl-tipos', isPlant:true, title:'Planta Tipo 02/04', src:'assets/PLANTAS/RSF_RP41_Tipo_02_04_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_02_04_HR.jpg' },
+    { id:69, type:'image', category:'plantas', subCategory:'pl-tipos', isPlant:true, title:'Planta Tipo 03', src:'assets/PLANTAS/RSF_RP41_Tipo_03_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_03_HR.jpg' },
+    { id:70, type:'image', category:'plantas', subCategory:'pl-tipos', isPlant:true, title:'Planta Tipo 06', src:'assets/PLANTAS/RSF_RP41_Tipo_06_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_06_HR.jpg' },
+
+    // ═══ PLANTAS / pl-ampliadas ═══
+    { id:71, type:'image', category:'plantas', subCategory:'pl-ampliadas', isPlant:true, title:'Tipo 01/05 – Ampliado', src:'assets/PLANTAS/RSF_RP41_Tipo_01_05_Ampliado_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_01_05_Ampliado_HR.jpg' },
+    { id:72, type:'image', category:'plantas', subCategory:'pl-ampliadas', isPlant:true, title:'Tipo 02/04 – Ampliado', src:'assets/PLANTAS/RSF_RP41_Tipo_02_04_Ampliado_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_02_04_Ampliado_HR.jpg' },
+    { id:73, type:'image', category:'plantas', subCategory:'pl-ampliadas', isPlant:true, title:'Tipo 03 – Ampliado', src:'assets/PLANTAS/RSF_RP41_Tipo_03_Ampliado_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_03_Ampliado_HR.jpg' },
+    { id:74, type:'image', category:'plantas', subCategory:'pl-ampliadas', isPlant:true, title:'Tipo 06 – Ampliado', src:'assets/PLANTAS/RSF_RP41_Tipo_06_Ampliado_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_06_Ampliado_HR.jpg' },
+
+    // ═══ PLANTAS / pl-decorados ═══
+    { id:75, type:'image', category:'plantas', subCategory:'pl-decorados', isPlant:true, title:'Tipo Decorado 01', src:'assets/PLANTAS/RSF_RP41_Tipo_Decorado_01_HR.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_Decorado_01_HR.jpg' },
+    { id:76, type:'image', category:'plantas', subCategory:'pl-decorados', isPlant:true, title:'Tipo Decorado 02', src:'assets/PLANTAS/RSF_RP41_Tipo_Decorado_02_HR copy.jpg', thumb:'assets/thumbs/PLANTAS/RSF_RP41_Tipo_Decorado_02_HR copy.jpg' },
+  ],
+};
+
+// Versão otimizada p/ o lightbox (assets/large/*.jpg, ~2560px) — o PNG original pesa 10-20 MB
+GALLERY_CONFIG.items.forEach(it => {
+  if (it.src && !it.large) it.large = it.src.replace('assets/', 'assets/large/').replace(/\.[^./]+$/, '.jpg');
+});
+
+// ================================================================
+// ENGINE
+// ================================================================
+const st = {
+  cat:    'all',
+  sub:    null,
+  lbItems: [],
+  lbIdx:   -1,
+  lbDual:  false,
+};
+
+const $ = id => document.getElementById(id);
+
+const elFilterMain    = $('filter-main');
+const elFilterSub     = $('filter-sub');
+const elFilterSubIn   = $('filter-sub-inner');
+const elGrid          = $('g-grid');
+const elCount         = $('g-count');
+$('g-brand-name').textContent = GALLERY_CONFIG.projectName;
+const elEmpty         = $('g-empty');
+const elLightbox      = $('lightbox');
+const elLbImg         = $('lb-img');
+const elLbDual        = $('lb-dual');
+const elLbTitle       = $('lb-title');
+const elLbSub         = $('lb-sub');
+const elLbCounter     = $('lb-counter');
+const elLbNotice      = $('lb-notice');
+const elLbPrev        = $('lb-prev');
+const elLbNext        = $('lb-next');
+
+// ── modo: 'imagens' | 'plantas' | 'all' ──────────────────────────
+const MODE = (() => {
+  try {
+    const m = new URLSearchParams(window.location.search).get('mode') || 'all';
+    return ['all','imagens','plantas'].includes(m) ? m : 'all';
+  } catch(_) { return 'all'; }
+})();
+
+// Categorias exibidas no filtro principal conforme modo
+const DISPLAY_CATS = (() => {
+  if (MODE === 'plantas') return GALLERY_CONFIG.categories.find(c => c.id === 'plantas').subs;
+  if (MODE === 'imagens') return GALLERY_CONFIG.categories.filter(c => c.id !== 'plantas');
+  return GALLERY_CONFIG.categories;
+})();
+
+// ── helpers ──────────────────────────────────────────────────────
+function getCat(id) { return GALLERY_CONFIG.categories.find(c => c.id === id); }
+function getSubLabel(catId, subId) {
+  const cat = getCat(catId);
+  if (!cat || !cat.subs) return '';
+  const s = cat.subs.find(s => s.id === subId);
+  return s ? s.label : '';
+}
+
+// ── filters ──────────────────────────────────────────────────────
+function renderMainFilters() {
+  elFilterMain.innerHTML = '';
+  DISPLAY_CATS.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'f-btn' + (cat.id === st.cat ? ' active' : '');
+    b.textContent = cat.label;
+    b.addEventListener('click', () => {
+      if (cat.id === st.cat) return;
+      st.cat = cat.id;
+      // Se a categoria tem sub-filtros, pré-seleciona o primeiro
+      st.sub = (cat.subs && cat.subs.length) ? cat.subs[0].id : null;
+      renderMainFilters(); renderSubFilters(); renderGallery();
+    });
+    elFilterMain.appendChild(b);
+  });
+}
+
+function renderSubFilters() {
+  // No modo plantas o filtro principal já é a tipologia — sem sub-filtro
+  if (MODE === 'plantas') { elFilterSub.classList.remove('open'); return; }
+  const cat = getCat(st.cat);
+  if (cat && cat.subs && cat.subs.length) {
+    elFilterSubIn.innerHTML = '';
+    const addSub = (id, label) => {
+      const b = document.createElement('button');
+      b.className = 'sf-btn' + (st.sub === id ? ' active' : '');
+      b.textContent = label;
+      b.addEventListener('click', () => {
+        if (st.sub === id) return;
+        st.sub = id;
+        renderSubFilters(); renderGallery();
+      });
+      elFilterSubIn.appendChild(b);
+    };
+    cat.subs.forEach(s => addSub(s.id, s.label));
+    elFilterSub.classList.add('open');
+  } else {
+    elFilterSub.classList.remove('open');
+  }
+}
+
+// ── gallery ──────────────────────────────────────────────────────
+function filteredItems() {
+  return GALLERY_CONFIG.items.filter(item => {
+    // Filtro de modo
+    if (MODE === 'plantas' && item.category !== 'plantas') return false;
+    if (MODE === 'imagens' && item.category === 'plantas') return false;
+
+    // Filtro de categoria
+    if (MODE === 'plantas') {
+      if (item.subCategory !== st.cat) return false;
+    } else {
+      if (st.cat && item.category !== st.cat) return false;
+      if (st.sub && item.subCategory !== st.sub) return false;
+    }
+    return true;
+  });
+}
+
+function renderGallery() {
+  const items = filteredItems();
+  const existing = elGrid.querySelectorAll('.g-card');
+
+  const doRender = () => {
+    elGrid.innerHTML = '';
+    elGrid.classList.toggle('plantas-mode', MODE === 'plantas');
+    elCount.textContent = items.length + (items.length === 1 ? ' item' : ' itens');
+    elEmpty.classList.remove('show');
+    st.lbItems = items.filter(i => i.type === 'image');
+    if (!items.length) { elEmpty.classList.add('show'); return; }
+    items.forEach((item, i) => {
+      const card = item.type === 'cobertura-plan'
+        ? buildCobCard(item)
+        : buildImgCard(item);
+      card.style.animationDelay = Math.min(i * 0.04, 0.5) + 's';
+      elGrid.appendChild(card);
+    });
+  };
+
+  if (existing.length) {
+    existing.forEach(c => { c.style.animation = 'cardOut 0.18s ease forwards'; });
+    setTimeout(doRender, 165);
+  } else {
+    doRender();
+  }
+}
+
+// inject cardOut keyframe once
+(function () {
+  const s = document.createElement('style');
+  s.textContent = '@keyframes cardOut{to{opacity:0;transform:scale(0.97)}}';
+  document.head.appendChild(s);
+}());
+
+function buildImgCard(item) {
+  const card = document.createElement('div');
+  card.className = 'g-card' + (item.isPlant ? ' is-plant' : '');
+
+  const img = document.createElement('img');
+  img.src = item.thumb || item.src;
+  img.alt = item.title;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.addEventListener('load',  () => card.classList.add('loaded'));
+  img.addEventListener('error', () => card.classList.add('loaded'));
+  if (img.complete) card.classList.add('loaded');
+
+  const ov = document.createElement('div');
+  ov.className = 'card-overlay';
+  ov.innerHTML = `<div class="card-title">${item.title}</div>` +
+    (item.subtitle ? `<div class="card-sub">${item.subtitle}</div>` :
+     item.subCategory ? `<div class="card-sub">${getSubLabel(item.category, item.subCategory)}</div>` : '');
+
+  const zoom = document.createElement('div');
+  zoom.className = 'card-zoom';
+  zoom.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`;
+
+  card.appendChild(img);
+  card.appendChild(ov);
+  card.appendChild(zoom);
+  card.addEventListener('click', () => openLb(item));
+  return card;
+}
+
+function buildCobCard(item) {
+  const card = document.createElement('div');
+  card.className = 'g-card cob-card';
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'cob-header';
+
+  const tg = document.createElement('div');
+  tg.innerHTML = `<div class="cob-badge">Planta</div>
+    <div class="cob-name">${item.title}</div>
+    ${item.area ? `<div class="cob-area">${item.area}</div>` : ''}
+    ${item.subtitle ? `<div class="cob-sub">${item.subtitle}</div>` : ''}`;
+
+  const tabs = document.createElement('div');
+  tabs.className = 'floor-tabs';
+
+  hdr.appendChild(tg);
+  hdr.appendChild(tabs);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'cob-body';
+
+  // skeleton overlay for cob body
+  const skel = document.createElement('div');
+  skel.className = 'floor-skeleton';
+  body.appendChild(skel);
+
+  let loadedCount = 0;
+  item.floors.forEach((floor, fi) => {
+    // tab
+    const tab = document.createElement('button');
+    tab.className = 'floor-tab' + (fi === 0 ? ' active' : '');
+    tab.textContent = floor.label;
+    tab.addEventListener('click', () => {
+      tabs.querySelectorAll('.floor-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      body.querySelectorAll('.floor-wrap').forEach((w, wi) => w.classList.toggle('active', wi === fi));
+    });
+    tabs.appendChild(tab);
+
+    // image wrap
+    const wrap = document.createElement('div');
+    wrap.className = 'floor-wrap' + (fi === 0 ? ' active' : '');
+
+    const img = document.createElement('img');
+    img.src = floor.thumb || floor.src;
+    img.alt = floor.label;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.addEventListener('click', () => openLbFloor(item, fi));
+    const onImgLoad = () => {
+      img.classList.add('loaded');
+      loadedCount++;
+      if (loadedCount >= item.floors.length) body.classList.add('loaded');
+    };
+    img.addEventListener('load', onImgLoad);
+    img.addEventListener('error', onImgLoad);
+    if (img.complete) onImgLoad();
+
+    const lbl = document.createElement('div');
+    lbl.className = 'floor-lbl';
+    lbl.textContent = floor.label;
+
+    wrap.appendChild(img);
+    wrap.appendChild(lbl);
+    body.appendChild(wrap);
+  });
+
+  // Footer — botão "ver ambas" (sobreposição) só faz sentido com 2 pisos;
+  // com mais pavimentos, as abas já alternam entre todos.
+  const foot = document.createElement('div');
+  foot.className = 'cob-footer';
+  if (item.floors.length === 2) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-see-both';
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>${item.viewBothLabel || 'Ver ambas as variantes'}`;
+    btn.addEventListener('click', () => openLbDual(item));
+    foot.appendChild(btn);
+  } else {
+    const hint = document.createElement('span');
+    hint.className = 'cob-hint';
+    hint.textContent = item.floors.length + ' pavimentos — alterne nas abas · toque para ampliar';
+    foot.appendChild(hint);
+  }
+
+  card.appendChild(hdr);
+  card.appendChild(body);
+  card.appendChild(foot);
+  return card;
+}
+
+// ── lightbox ─────────────────────────────────────────────────────
+function showLb() {
+  elLightbox.classList.add('open');
+  document.addEventListener('keydown', onLbKey);
+}
+
+function openLb(item) {
+  st.lbIdx = st.lbItems.findIndex(i => i.id === item.id);
+  st.lbDual = false;
+  elLbDual.classList.remove('show');
+  elLbImg.style.display = '';
+  elLbPrev.style.display = '';
+  elLbNext.style.display = '';
+  updateLb();
+  showLb();
+}
+
+function openLbFloor(item, fi) {
+  st.lbDual = false;
+  elLbDual.classList.remove('show');
+  elLbImg.style.display = '';
+  elLbPrev.style.display = 'none';
+  elLbNext.style.display = 'none';
+  elLbImg.src = item.floors[fi].src;
+  elLbTitle.textContent = item.title;
+  elLbSub.textContent = item.floors[fi].label;
+  elLbCounter.textContent = '';
+  elLbNotice.textContent = 'As plantas pertencem à mesma unidade';
+  showLb();
+}
+
+function openLbDual(item) {
+  st.lbDual = true;
+  elLbImg.style.display = 'none';
+  elLbPrev.style.display = 'none';
+  elLbNext.style.display = 'none';
+  elLbDual.classList.add('show');
+
+  const dcA = $('dc-a'), dcB = $('dc-b');
+  dcA.querySelector('.dual-lbl').textContent = item.floors[0].label;
+  dcA.querySelector('img').src = item.floors[0].src;
+  dcB.querySelector('.dual-lbl').textContent = item.floors[1].label;
+  dcB.querySelector('img').src = item.floors[1].src;
+
+  elLbTitle.textContent = item.title;
+  elLbSub.textContent = item.area || '';
+  elLbCounter.textContent = item.area || '';
+  elLbNotice.textContent = 'Ambas as variantes pertencem à mesma unidade';
+  showLb();
+}
+
+function closeLb() {
+  elLightbox.classList.remove('open');
+  document.removeEventListener('keydown', onLbKey);
+  if (window._lbResetZoom) window._lbResetZoom();
+  setTimeout(() => {
+    elLbImg.style.display = '';
+    elLbPrev.style.display = '';
+    elLbNext.style.display = '';
+    elLbDual.classList.remove('show');
+  }, 300);
+}
+
+// Mostra a thumb (já em cache) na hora e troca pela versão large quando carregar
+function showLbSrc(item) {
+  const full = item.large || item.src;
+  if (!full) return;
+  elLbImg.dataset.full = full;
+  const pre = new Image();
+  const apply = () => { if (elLbImg.dataset.full === full) elLbImg.src = full; };
+  pre.onload = apply;
+  pre.onerror = () => { if (elLbImg.dataset.full === full && item.src && elLbImg.src.indexOf(item.src) < 0) elLbImg.src = item.src; };
+  pre.src = full;
+  if (!pre.complete && item.thumb) elLbImg.src = item.thumb;
+}
+
+const _lbPreloaded = {};
+function preloadLb(idx) {
+  const it = st.lbItems[idx];
+  const u = it && (it.large || it.src);
+  if (!u || _lbPreloaded[u]) return;
+  _lbPreloaded[u] = new Image();
+  _lbPreloaded[u].src = u;
+}
+
+function updateLb(dir) {
+  const item = st.lbItems[st.lbIdx];
+  if (!item) return;
+
+  // Textos/contador atualizam de imediato
+  elLbTitle.textContent = item.title;
+  elLbSub.textContent = item.subtitle || (item.subCategory ? getSubLabel(item.category, item.subCategory) : '');
+  elLbCounter.textContent = (st.lbIdx + 1) + ' / ' + st.lbItems.length;
+  elLbNotice.textContent = '';
+  elLbPrev.disabled = st.lbIdx === 0;
+  elLbNext.disabled = st.lbIdx === st.lbItems.length - 1;
+
+  [1, -1, 2, -2].forEach(d => preloadLb(st.lbIdx + d));
+  if (st._lbSwapT) clearTimeout(st._lbSwapT);
+  elLbImg.classList.remove('o-next','o-prev','i-next','i-prev','i-fade');
+
+  const swap = () => {
+    showLbSrc(item);
+    elLbImg.style.opacity = '1';
+    elLbImg.classList.remove('o-next','o-prev');
+    void elLbImg.offsetWidth; // reinicia a animação
+    elLbImg.classList.add(dir === -1 ? 'i-prev' : dir === 1 ? 'i-next' : 'i-fade');
+  };
+
+  if (dir === 1 || dir === -1) {
+    // fase 1: imagem atual desliza para fora no sentido da navegação
+    void elLbImg.offsetWidth;
+    elLbImg.classList.add(dir === 1 ? 'o-next' : 'o-prev');
+    st._lbSwapT = setTimeout(swap, 150);   // fase 2: nova entra pelo lado oposto
+  } else {
+    elLbImg.style.opacity = '0';
+    st._lbSwapT = setTimeout(swap, 110);
+  }
+}
+
+function navLb(dir) {
+  if (st.lbDual) return;
+  const ni = st.lbIdx + dir;
+  if (ni < 0 || ni >= st.lbItems.length) return;
+  st.lbIdx = ni;
+  if (window._lbResetZoom) window._lbResetZoom();
+  updateLb(dir);
+}
+
+function onLbKey(e) {
+  if (e.key === 'Escape')      closeLb();
+  if (e.key === 'ArrowLeft')   navLb(-1);
+  if (e.key === 'ArrowRight')  navLb(1);
+}
+
+// ── 3DVista close communication ───────────────────────────────────
+function closeGallery() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'closeGallery' }, '*');
+  }
+}
+
+// ── init ──────────────────────────────────────────────────────────
+function init() {
+  // Filtro inicial depende do modo
+  if (MODE === 'plantas') {
+    st.cat = DISPLAY_CATS[0].id;
+    st.sub = null;
+  } else {
+    st.cat = DISPLAY_CATS[0].id;               // 'areas-comuns'
+    const c0 = getCat(st.cat);
+    st.sub = (c0 && c0.subs && c0.subs.length) ? c0.subs[0].id : null;  // pré-seleciona 1ª sub
+  }
+
+  renderMainFilters();
+  renderSubFilters();
+  renderGallery();
+
+  $('btn-close').addEventListener('click', closeGallery);
+  $('lb-close').addEventListener('click', closeLb);
+  elLbPrev.addEventListener('click', () => navLb(-1));
+  elLbNext.addEventListener('click', () => navLb(1));
+  $('lb-body').addEventListener('click', e => { if (e.target === $('lb-body')) closeLb(); });
+}
+
+// ── zoom + pan in lightbox ───────────────────────────────────────
+(function () {
+  const img      = document.getElementById('lb-img');
+  const body     = document.getElementById('lb-body');
+  const btnIn    = document.getElementById('lb-zoom-in');
+  const btnOut   = document.getElementById('lb-zoom-out');
+  const lblLevel = document.getElementById('lb-zoom-level');
+
+  const MIN = 1, MAX = 5;
+  let z = 1, px = 0, py = 0;
+  let dragging = false, dragX = 0, dragY = 0, basePx = 0, basePy = 0;
+  let pinchDist = null, touchX = 0, touchY = 0, touchPrevX = 0, touchPrevY = 0;
+
+  // transform: translate(px, py) scale(z) com transform-origin: center
+  // fórmula correta: px += (cursorX - imgCenterX) * (1 - nz/z)
+  function applyTransform(smooth) {
+    img.style.transition = smooth ? 'transform 0.18s ease-out' : 'none';
+    img.style.transform  = (z === 1 && px === 0 && py === 0)
+      ? '' : `translate(${px}px,${py}px) scale(${z})`;
+    img.classList.toggle('zoomed', z > 1);
+    lblLevel.textContent = Math.round(z * 100) + '%';
+    btnOut.disabled = z <= MIN;
+    btnIn.disabled  = z >= MAX;
+  }
+
+  function resetZoom() {
+    z = 1; px = 0; py = 0;
+    img.classList.remove('zoomed', 'dragging');
+    applyTransform(true);
+  }
+
+  function zoomAt(dz, clientX, clientY, smooth) {
+    const nz = Math.min(Math.max(z + dz, MIN), MAX);
+    if (nz === z) return;
+    const r = img.getBoundingClientRect();
+    const cx = r.left + r.width  / 2;  // centro atual da imagem na tela
+    const cy = r.top  + r.height / 2;
+    // mantém o ponto sob o cursor fixo após a mudança de escala
+    px += (clientX - cx) * (1 - nz / z);
+    py += (clientY - cy) * (1 - nz / z);
+    z = nz;
+    applyTransform(!!smooth);
+  }
+
+  function bodyCenter() {
+    const r = body.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  // botões +/−: zoom em direção ao centro do viewport
+  btnIn.addEventListener('click',  () => { const c = bodyCenter(); zoomAt(+0.5, c.x, c.y, true); });
+  btnOut.addEventListener('click', () => { const c = bodyCenter(); zoomAt(-0.5, c.x, c.y, true); });
+
+  // duplo clique: +2× no ponto clicado, ou reset
+  img.addEventListener('dblclick', e => {
+    e.stopPropagation();
+    if (z > 1) resetZoom(); else zoomAt(+2, e.clientX, e.clientY, true);
+  });
+
+  // roda do mouse: zoom suave no cursor
+  let wheelRaf = null;
+  body.addEventListener('wheel', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (document.getElementById('lb-dual').classList.contains('show')) return;
+    e.preventDefault();
+    const dz = e.deltaY < 0 ? 0.25 : -0.25;
+    // cancelar transição durante scroll rápido para resposta imediata
+    if (wheelRaf) cancelAnimationFrame(wheelRaf);
+    wheelRaf = requestAnimationFrame(() => {
+      zoomAt(dz, e.clientX, e.clientY, false);
+      wheelRaf = null;
+    });
+  }, { passive: false });
+
+  // arrasto com mouse (pan quando ampliado)
+  img.addEventListener('mousedown', e => {
+    if (z <= 1) return;
+    e.preventDefault();
+    dragging = true;
+    dragX = e.clientX; dragY = e.clientY;
+    basePx = px; basePy = py;
+    img.classList.add('dragging');
+  });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    px = basePx + (e.clientX - dragX);
+    py = basePy + (e.clientY - dragY);
+    applyTransform(false);
+  });
+  window.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    img.classList.remove('dragging');
+  });
+
+  // touch: swipe (z=1) ou pan (z>1) ou pinch zoom
+  body.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      pinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    } else {
+      pinchDist = null;
+      touchX = touchPrevX = e.touches[0].clientX;
+      touchY = touchPrevY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  body.addEventListener('touchmove', e => {
+    if (e.touches.length === 2 && pinchDist !== null) {
+      e.preventDefault();
+      const d  = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      zoomAt((d - pinchDist) * 0.018, cx, cy, false);
+      pinchDist = d;
+    } else if (e.touches.length === 1 && z > 1) {
+      e.preventDefault();
+      px += e.touches[0].clientX - touchPrevX;
+      py += e.touches[0].clientY - touchPrevY;
+      touchPrevX = e.touches[0].clientX;
+      touchPrevY = e.touches[0].clientY;
+      applyTransform(false);
+    }
+  }, { passive: false });
+
+  body.addEventListener('touchend', e => {
+    if (pinchDist !== null) { pinchDist = null; return; }
+    if (z > 1) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    const dy = e.changedTouches[0].clientY - touchY;
+    if (Math.abs(dx) > 40 && Math.abs(dy) < 40) navLb(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  window._lbResetZoom = resetZoom;
+  applyTransform(false);
+}());
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
