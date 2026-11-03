@@ -167,7 +167,7 @@
 
     var iframe = d.createElement('iframe');
     iframe.src = OBRAS_URL + '?v=' + Date.now();
-    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;background:#F7F0EA;';
+    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;background:#0A0A0B;';
     iframe.setAttribute('allow', 'fullscreen');
 
     overlay.appendChild(iframe);
