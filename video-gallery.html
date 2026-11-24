@@ -12,14 +12,14 @@
 
     :root {
       /* Grupo Impper — tema navy imersivo */
-      --bg:            #BC6C49;
-      --surface:       #C97D5B;
-      --surface-2:     #D48B69;
+      --bg:            #001D57;
+      --surface:       #0B2A6E;
+      --surface-2:     #14398A;
       --dark:          #FFFFFF;
       --border:        rgba(255,255,255,0.12);
       --border-strong: rgba(255,255,255,0.28);
-      --accent:        #E57D43;
-      --accent-soft:   rgba(229,125,67,0.16);
+      --accent:        #001D57;
+      --accent-soft:   rgba(0,29,87,0.16);
       --font-sans:     'Inter', system-ui, sans-serif;
       --ease:          cubic-bezier(0.4, 0, 0.2, 1);
       --spring:        cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -82,7 +82,7 @@
     .vg-tab.active {
       background: var(--accent);
       color: #FFFFFF;
-      box-shadow: 0 3px 12px rgba(229,125,67,0.35);
+      box-shadow: 0 3px 12px rgba(0,29,87,0.35);
     }
 
     #btn-close {
@@ -175,7 +175,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #C97D5B 0%, #1F3817 100%);
+      background: linear-gradient(135deg, #0B2A6E 0%, #1F3817 100%);
       z-index: 0;
       transition: opacity 0.4s ease;
     }
@@ -207,7 +207,7 @@
       display: flex; align-items: center; justify-content: center;
       transform: scale(0.85);
       transition: transform 0.3s var(--spring);
-      box-shadow: 0 6px 18px rgba(229,125,67,0.45);
+      box-shadow: 0 6px 18px rgba(0,29,87,0.45);
       flex-shrink: 0;
     }
     .vg-card:hover .vg-play-icon { transform: scale(1); }
