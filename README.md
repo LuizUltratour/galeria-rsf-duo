@@ -11,20 +11,20 @@ Galeria de imagens/plantas/vídeos para injeção via script no 3DVista, hospeda
 
 | Arquivo | URL |
 |---------|-----|
-| Galeria | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/index.html` |
-| Vídeos  | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/video-gallery.html` |
-| 360°    | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/galeria-360.html` |
-| Obras  | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/obras.html` |
-| Script  | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/inject.js` |
+| Galeria | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/index.html` |
+| Vídeos  | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/video-gallery.html` |
+| 360°    | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/galeria-360.html` |
+| Obras  | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/obras.html` |
+| Script  | `https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/inject.js` |
 
-**S3 path:** `s3://skylineip/Tour Virtual/rsf/galeria-symmetry/`
+**S3 path:** `s3://skylineip/Tour Virtual/rsf/galeria-duo/`
 
 ---
 
 ## Estrutura de arquivos
 
 ```
-galeria-rsf-symmetry/
+galeria-rsf-duo/
 ├── index.html              ← galeria de imagens + plantas (auto-suficiente)
 ├── video-gallery.html      ← galeria de vídeos
 ├── galeria-360.html        ← galeria de panoramas 360° (setas pulsantes + editor)
@@ -122,7 +122,7 @@ ignora `thumbs/`, `videos/` e o PDF. Também gera `large/` (~2560 px, q88) usado
 ### Sync completo
 
 ```bash
-aws s3 sync . "s3://skylineip/Tour Virtual/rsf/galeria-symmetry/" \
+aws s3 sync . "s3://skylineip/Tour Virtual/rsf/galeria-duo/" \
   --exclude ".git/*" --exclude ".claude/*" --exclude "*.py" \
   --exclude "README.md" --exclude ".gitattributes" --exclude "*.md" \
   --exclude "deploy.ps1" --exclude "*.pdf" \
@@ -132,10 +132,10 @@ aws s3 sync . "s3://skylineip/Tour Virtual/rsf/galeria-symmetry/" \
 ### Atualizar só index.html e inject.js
 
 ```bash
-aws s3 cp index.html "s3://skylineip/Tour Virtual/rsf/galeria-symmetry/index.html" \
+aws s3 cp index.html "s3://skylineip/Tour Virtual/rsf/galeria-duo/index.html" \
   --cache-control "no-cache,no-store,must-revalidate"
 
-aws s3 cp inject.js "s3://skylineip/Tour Virtual/rsf/galeria-symmetry/inject.js" \
+aws s3 cp inject.js "s3://skylineip/Tour Virtual/rsf/galeria-duo/inject.js" \
   --cache-control "no-cache,no-store,must-revalidate"
 ```
 
@@ -150,7 +150,7 @@ aws s3 cp inject.js "s3://skylineip/Tour Virtual/rsf/galeria-symmetry/inject.js"
 ```js
 (function(){
   var s = document.createElement('script');
-  s.src = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/inject.js?v=' + Date.now();
+  s.src = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/inject.js?v=' + Date.now();
   document.head.appendChild(s);
 })();
 ```

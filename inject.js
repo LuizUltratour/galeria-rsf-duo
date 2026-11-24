@@ -1,11 +1,11 @@
 (function (w, d) {
   'use strict';
 
-  var GALLERY_URL        = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/index.html';
-  var VIDEO_GALLERY_URL  = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/video-gallery.html';
-  var GALERIA_360_URL    = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/galeria-360.html';
-  var DIFERENCIAIS_URL   = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/diferenciais.html';
-  var OBRAS_URL          = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-symmetry/obras.html';
+  var GALLERY_URL        = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/index.html';
+  var VIDEO_GALLERY_URL  = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/video-gallery.html';
+  var GALERIA_360_URL    = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/galeria-360.html';
+  var DIFERENCIAIS_URL   = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/diferenciais.html';
+  var OBRAS_URL          = 'https://skylineip.s3.sa-east-1.amazonaws.com/Tour+Virtual/rsf/galeria-duo/obras.html';
 
   var overlay    = null;
   var msgHandler = null;
